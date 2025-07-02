@@ -1,10 +1,12 @@
 package com.example.uiclient.utils;
 
 import com.example.uiclient.request.ApiRequest;
+import com.example.uiclient.request.DetailNewsRequest;
 import com.example.uiclient.request.LoginRequest;
 import com.example.uiclient.request.NewsRequest;
 import com.example.uiclient.request.ProfileRequest;
 import com.example.uiclient.response.ApiResponse;
+import com.example.uiclient.response.DetailNewsResponse;
 import com.example.uiclient.response.LoginResponse;
 import com.example.uiclient.response.NewsResponse;
 import com.example.uiclient.response.ProfileResponse;
@@ -41,4 +43,10 @@ public interface ApiService {
 
     @POST("login")
     Call<LoginResponse> login(@Body LoginRequest loginRequest);
+
+    @POST("macro")
+    Call<DetailNewsResponse> macro(@Body DetailNewsRequest detailNewsRequest);
+
+    @POST("recommendation")
+    Call<DetailNewsResponse> recommendation(@Body DetailNewsRequest detailNewsRequest);
 }

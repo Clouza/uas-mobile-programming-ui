@@ -38,7 +38,7 @@
 
             <TextView
                 android:id="@+id/detailContent"
-                android:text="Isi lengkap berita..."
+                android:text="Pilih Makro atau Rekomendasi untuk lebih detail."
                 android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
