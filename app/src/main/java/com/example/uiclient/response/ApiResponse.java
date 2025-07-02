@@ -3,10 +3,16 @@ package com.example.uiclient.response;
 import com.google.gson.annotations.SerializedName;
 
 public class ApiResponse {
-    @SerializedName("key")
-    private String key;
+    @SerializedName("success")
+    private boolean isSuccess;
+    @SerializedName("apiKey")
+    private String apiKey;
 
-    public String getKey() {
-        return key;
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public boolean isSuccess() {
+        return isSuccess;
     }
 }

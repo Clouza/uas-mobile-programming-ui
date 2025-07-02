@@ -75,6 +75,7 @@ public class ProfileActivity extends AppCompatActivity {
         email = findViewById(R.id.editTextNewEmail);
         password = findViewById(R.id.editTextNewPassword);
         apiKey = findViewById(R.id.editTextAPIKey);
+        apiKey.setText(storage.getApiKey() != null ? storage.getApiKey() : "");
 
         changeImage = findViewById(R.id.buttonChangePhoto);
         image = findViewById(R.id.imageViewProfileImage);
@@ -175,7 +176,10 @@ public class ProfileActivity extends AppCompatActivity {
                             Toast.makeText(ProfileActivity.this, "Invalid API Key", Toast.LENGTH_SHORT).show();
                         }
 
-                        if (profileResponse.getApiKey() != null && !apiKey.getText().toString().isEmpty()){
+                        String _apiKey = apiKey.getText().toString();
+                        String apiKeyResponse = profileResponse.getApiKey();
+
+                        if (apiKeyResponse != null && !_apiKey.isEmpty()){
                             storage.saveApiKey(profileResponse.getApiKey());
                             apiKey.setText(profileResponse.getApiKey());
                             Toast.makeText(ProfileActivity.this, "API Key Valid", Toast.LENGTH_SHORT).show();

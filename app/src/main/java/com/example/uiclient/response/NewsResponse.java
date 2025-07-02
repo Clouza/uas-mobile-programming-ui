@@ -1,48 +1,21 @@
 package com.example.uiclient.response;
 
+import com.example.uiclient.model.NewsItem;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class NewsResponse {
-    @SerializedName("id")
-    private String id;
-    @SerializedName("messageId")
-    private String messageId;
-    @SerializedName("channelId")
-    private String channelId;
-    @SerializedName("guildId")
-    private String guildId;
-    @SerializedName("author")
-    private String author;
-    @SerializedName("content")
-    private String content;
-    @SerializedName("timestamp")
-    private String timestamp;
+    @SerializedName("success")
+    private boolean isSuccess;
+    @SerializedName("news")
+    private List<NewsItem> news;
 
-    public String getId() {
-        return id;
+    public List<NewsItem> getNews() {
+        return news;
     }
 
-    public String getMessageId() {
-        return messageId;
-    }
-
-    public String getChannelId() {
-        return channelId;
-    }
-
-    public String getGuildId() {
-        return guildId;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
+    public boolean isSuccess() {
+        return isSuccess;
     }
 }

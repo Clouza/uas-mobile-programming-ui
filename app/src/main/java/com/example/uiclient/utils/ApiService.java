@@ -2,6 +2,7 @@ package com.example.uiclient.utils;
 
 import com.example.uiclient.request.ApiRequest;
 import com.example.uiclient.request.LoginRequest;
+import com.example.uiclient.request.NewsRequest;
 import com.example.uiclient.request.ProfileRequest;
 import com.example.uiclient.response.ApiResponse;
 import com.example.uiclient.response.LoginResponse;
@@ -22,7 +23,7 @@ public interface ApiService {
     Call<ProfileResponse> updateUserInfo(@Body ProfileRequest profileRequest);
 
     @POST("news")
-    Call<NewsResponse> news();
+    Call<NewsResponse> news(@Body NewsRequest newsRequest);
 
     @POST("key")
     Call<ApiResponse> apiKey(@Body ApiRequest apiRequest);
