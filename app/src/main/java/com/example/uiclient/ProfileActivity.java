@@ -32,6 +32,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.uiclient.request.ProfileRequest;
 import com.example.uiclient.response.ProfileResponse;
 import com.example.uiclient.utils.ApiService;
@@ -40,6 +41,11 @@ import com.example.uiclient.utils.RetrofitClient;
 import com.example.uiclient.utils.Storage;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.File;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,12 +53,14 @@ import retrofit2.Response;
 public class ProfileActivity extends AppCompatActivity {
 
     EditText email, password, apiKey;
-    Button changeImage, update, logout, news, profile;
+    Button changeImage, update, logout;
     ImageView image;
 
     private ApiService apiService;
     private Storage storage;
     private static final int PERMISSION_REQUEST_CODE = 100;
+    private String selectedImagePath = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +105,7 @@ public class ProfileActivity extends AppCompatActivity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                storage.removeUserId();
+                storage.clear();
                 Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
                 startActivity(intent);
                 Toast.makeText(ProfileActivity.this, "Logout berhasil!", Toast.LENGTH_SHORT).show();
@@ -114,6 +122,7 @@ public class ProfileActivity extends AppCompatActivity {
                     Uri uri = result.getData().getData();
                     if (uri != null) {
                         image.setImageURI(uri);
+                        selectedImagePath = getImagePath(ProfileActivity.this, uri);
                         Log.i("ProfileActivity", "Selected image: " + uri.toString());
                     }
                 }
@@ -143,7 +152,13 @@ public class ProfileActivity extends AppCompatActivity {
 
                     if (profileResponse.isSuccess()) {
                         email.setText(profileResponse.getEmail());
-                        // todo: image url show
+
+                        // image preview
+                        Glide.with(ProfileActivity.this)
+                                .load(RetrofitClient.getAssetPath() + profileResponse.getImage())
+                                .placeholder(R.drawable.ic_launcher_foreground) // loading state
+                                .error(R.drawable.ic_launcher_background)
+                                .into(image);
                     } else {
                         Toast.makeText(ProfileActivity.this, "Id tidak ditemukan", Toast.LENGTH_SHORT).show();
                     }
@@ -162,7 +177,26 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void updateUserInfo(ProfileRequest profileRequest) {
-        Call<ProfileResponse> call = apiService.updateUserInfo(profileRequest);
+        RequestBody id = RequestBody.create(MediaType.parse("text/plain"), profileRequest.getId());
+        RequestBody _email = RequestBody.create(MediaType.parse("text/plain"), profileRequest.getEmail());
+        RequestBody password = RequestBody.create(MediaType.parse("text/plain"), profileRequest.getPassword());
+        RequestBody _apiKey = RequestBody.create(MediaType.parse("text/plain"), profileRequest.getApiKey());
+
+        MultipartBody.Part filePart = null;
+        if (selectedImagePath != null) {
+            File file = new File(selectedImagePath);
+            RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
+            filePart = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+        }
+
+        Call<ProfileResponse> call = apiService.updateUserInfo(
+                filePart,
+                id,
+                _email,
+                password,
+                _apiKey
+        );
+
         call.enqueue(new Callback<ProfileResponse>() {
             @Override
             public void onResponse(Call<ProfileResponse> call, Response<ProfileResponse> response) {
@@ -184,6 +218,13 @@ public class ProfileActivity extends AppCompatActivity {
                             apiKey.setText(profileResponse.getApiKey());
                             Toast.makeText(ProfileActivity.this, "API Key Valid", Toast.LENGTH_SHORT).show();
                         }
+
+                        // update image
+                        Glide.with(ProfileActivity.this)
+                                .load(RetrofitClient.getAssetPath() + profileResponse.getImage())
+                                .placeholder(R.drawable.ic_launcher_foreground) // loading state
+                                .error(R.drawable.ic_launcher_background)
+                                .into(image);
 
                         Toast.makeText(ProfileActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
                     } else {
