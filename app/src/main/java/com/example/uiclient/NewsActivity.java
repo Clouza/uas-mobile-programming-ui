@@ -28,6 +28,7 @@ import com.example.uiclient.utils.RetrofitClient;
 import com.example.uiclient.utils.Storage;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +57,11 @@ public class NewsActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         NavigationBar.bottomNavigation(this, bottomNavigationView);
         storage = new Storage(this);
-        apiService = RetrofitClient.client().create(ApiService.class);
+        try {
+            apiService = RetrofitClient.client().create(ApiService.class);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
 
         newsRecyclerView = findViewById(R.id.newsRecyclerView);
         newsRecyclerView.setLayoutManager(new LinearLayoutManager(this));

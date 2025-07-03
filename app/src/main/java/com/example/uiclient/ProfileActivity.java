@@ -42,6 +42,7 @@ import com.example.uiclient.utils.Storage;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
+import java.security.NoSuchAlgorithmException;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -78,7 +79,11 @@ public class ProfileActivity extends AppCompatActivity {
 
         storage = new Storage(this);
         String userId = storage.getUserId();
-        apiService = RetrofitClient.client().create(ApiService.class);
+        try {
+            apiService = RetrofitClient.client().create(ApiService.class);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
 
         email = findViewById(R.id.editTextNewEmail);
         password = findViewById(R.id.editTextNewPassword);
@@ -153,6 +158,7 @@ public class ProfileActivity extends AppCompatActivity {
                     if (profileResponse.isSuccess()) {
                         email.setText(profileResponse.getEmail());
 
+                        Log.wtf("Anjay", RetrofitClient.getAssetPath() + profileResponse.getImage());
                         // image preview
                         Glide.with(ProfileActivity.this)
                                 .load(RetrofitClient.getAssetPath() + profileResponse.getImage())

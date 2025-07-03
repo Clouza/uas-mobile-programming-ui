@@ -20,6 +20,8 @@ import com.example.uiclient.utils.ApiService;
 import com.example.uiclient.utils.RetrofitClient;
 import com.example.uiclient.utils.Storage;
 
+import java.security.NoSuchAlgorithmException;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,7 +48,11 @@ public class MainActivity extends AppCompatActivity {
         login = findViewById(R.id.buttonLogin);
         storage = new Storage(this);
 
-        apiService = RetrofitClient.client().create(ApiService.class);
+        try {
+            apiService = RetrofitClient.client().create(ApiService.class);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override

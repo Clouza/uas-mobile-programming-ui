@@ -20,6 +20,7 @@ import com.example.uiclient.response.LoginResponse;
 import com.example.uiclient.utils.ApiService;
 import com.example.uiclient.utils.RetrofitClient;
 
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -44,7 +45,12 @@ public class DetailActivity extends AppCompatActivity {
             return insets;
         });
 
-        apiService = RetrofitClient.client().create(ApiService.class);
+        try {
+            apiService = RetrofitClient.client().create(ApiService.class);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
         TextView title = findViewById(R.id.detailTitle);
         TextView time = findViewById(R.id.detailTime);
         TextView content = findViewById(R.id.detailContent);
