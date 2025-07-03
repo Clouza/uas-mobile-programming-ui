@@ -3,6 +3,7 @@ package com.example.uiclient;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,10 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.uiclient.model.NewsItem;
-import com.example.uiclient.request.ApiRequest;
 import com.example.uiclient.request.NewsRequest;
-import com.example.uiclient.response.ApiResponse;
-import com.example.uiclient.response.LoginResponse;
 import com.example.uiclient.response.NewsResponse;
 import com.example.uiclient.utils.ApiService;
 import com.example.uiclient.utils.NavigationBar;
@@ -42,6 +40,10 @@ public class NewsActivity extends AppCompatActivity {
     private List<NewsItem> newsList = new ArrayList<>();
     private Storage storage;
     private ApiService apiService;
+
+    private Handler handler = new Handler();
+    private Runnable newsUpdater;
+    private static final long REFRESH_INTERVAL = 60 * 1000; // 1 menit
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +76,15 @@ public class NewsActivity extends AppCompatActivity {
         });
         newsRecyclerView.setAdapter(newsAdapter);
 
-        getNewsData();
+        // auto refresh
+        newsUpdater = new Runnable() {
+            @Override
+            public void run() {
+                getNewsData();
+                handler.postDelayed(this, REFRESH_INTERVAL);
+            }
+        };
+        handler.post(newsUpdater);
     }
 
     private void getNewsData() {
@@ -82,34 +92,8 @@ public class NewsActivity extends AppCompatActivity {
         String apiKey = storage.getApiKey();
         if (apiKey == null || apiKey.isEmpty()) {
             setApiKeyFirstDialog();
+            return;
         }
-
-        ApiRequest apiRequest = new ApiRequest(apiKey);
-        Call<ApiResponse> callApi = apiService.apiKey(apiRequest);
-
-        callApi.enqueue(new Callback<ApiResponse>() {
-            @Override
-            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                if (response.isSuccessful()) {
-                    ApiResponse apiResponse = response.body();
-
-                    if (apiResponse.isSuccess()) {
-                        storage.saveApiKey(apiResponse.getApiKey());
-                        Toast.makeText(NewsActivity.this, "API Key Valid", Toast.LENGTH_SHORT).show();
-                    } else {
-                        setApiKeyFirstDialog();
-                    }
-                } else {
-                    Toast.makeText(NewsActivity.this, "Web Service Error", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ApiResponse> call, Throwable error) {
-                Toast.makeText(NewsActivity.this, "Koneksi Error", Toast.LENGTH_SHORT).show();
-                Log.wtf("NewsActivity", error.getMessage());
-            }
-        });
 
         // get news
         NewsRequest newsRequest = new NewsRequest(apiKey);
@@ -156,5 +140,11 @@ public class NewsActivity extends AppCompatActivity {
         builder.setCancelable(false);
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(newsUpdater);
     }
 }
