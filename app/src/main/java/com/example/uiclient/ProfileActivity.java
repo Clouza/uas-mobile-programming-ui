@@ -62,7 +62,6 @@ public class ProfileActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 100;
     private String selectedImagePath = null;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,7 +157,6 @@ public class ProfileActivity extends AppCompatActivity {
                     if (profileResponse.isSuccess()) {
                         email.setText(profileResponse.getEmail());
 
-                        Log.wtf("Anjay", RetrofitClient.getAssetPath() + profileResponse.getImage());
                         // image preview
                         Glide.with(ProfileActivity.this)
                                 .load(RetrofitClient.getAssetPath() + profileResponse.getImage())

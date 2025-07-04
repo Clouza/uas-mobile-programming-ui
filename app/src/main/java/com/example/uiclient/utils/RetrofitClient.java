@@ -16,8 +16,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    // todo: ganti icon android dan menu
-    private static String BASE_URL = "https://42c4-2a09-bac5-d561-25d7-00-3c5-10.ngrok-free.app";
+    private static String BASE_URL = "https://788c-2a09-bac5-d561-101e-00-19b-132.ngrok-free.app";
 
     public static Retrofit client() throws NoSuchAlgorithmException {
         OkHttpClient client = getUnsafeOkHttpClient();
